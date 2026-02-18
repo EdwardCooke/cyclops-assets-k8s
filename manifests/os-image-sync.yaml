@@ -4,6 +4,7 @@ metadata:
   name: os-image-sync
   namespace: cyclops-assets
 spec:
+  concurrencyPolicy: Forbid
   schedule: "0 0 * * *"
   jobTemplate:
     spec:
