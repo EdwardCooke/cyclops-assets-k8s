@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apt-cacher-ng-config
+  namespace: cyclops-assets
+data:
+  acng.conf: |
+    # stuff

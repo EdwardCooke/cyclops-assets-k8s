@@ -2,6 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: assets-cyclops
+  namespace: cyclops-assets
 spec:
   commonName: assets.cyclops-assets
   dnsNames:

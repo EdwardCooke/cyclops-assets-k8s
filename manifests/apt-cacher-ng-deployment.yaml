@@ -14,15 +14,6 @@ spec:
       labels:
         app: apt-cacher-ng
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: apt-cacher-ng
-              topologyKey: kubernetes.io/hostname
       containers:
       - name: apt-cacher-ng
         image: quay.io/cyclops-k8s/apt-cacher-ng:latest
@@ -38,13 +29,20 @@ spec:
         - containerPort: 3142
           name: http
         volumeMounts:
+        # - mountPath: /etc/apt-cacher-ng
+        #   name: apt-cacher-ng-config
         - mountPath: /var/cache/apt-cacher-ng
           name: apt-cacher-ng-cache
+      securityContext:
+        fsGroup: 101
       volumes:
+      # - name: apt-cacher-ng-config
+      #   configMap:
+      #     name: apt-cacher-ng-config
       - name: apt-cacher-ng-cache
         persistentVolumeClaim:
           claimName: apt-cacher-ng-cache
-    strategy:
-      type: RollingUpdate
-      rollingUpdate:
-        maxSurge: 0
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
