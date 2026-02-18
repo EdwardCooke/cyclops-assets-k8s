@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apt-cacher-ng
+  namespace: cyclops-assets
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: apt-cacher-ng
+  template:
+    metadata:
+      labels:
+        app: apt-cacher-ng
+    spec:
+      containers:
+      - name: apt-cacher-ng
+        image: quay.io/cyclops-k8s/apt-cacher-ng:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "200Mi"
+            cpu: "500m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+        ports:
+        - containerPort: 3142
+          name: http
+        volumeMounts:
+        - mountPath: /var/cache/apt-cacher-ng
+          name: apt-cacher-ng-cache
+      securityContext:
+        fsGroup: 101
+      volumes:
+      - name: apt-cacher-ng-cache
+        persistentVolumeClaim:
+          claimName: apt-cacher-ng-cache
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
