@@ -4,7 +4,7 @@ metadata:
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
@@ -44,3 +44,7 @@ spec:
       - name: apt-cacher-ng-cache
         persistentVolumeClaim:
           claimName: apt-cacher-ng-cache
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 0

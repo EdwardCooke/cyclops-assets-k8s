@@ -5,7 +5,7 @@ metadata:
   namespace: cyclops-assets
 spec:
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOncePod
   resources:
     requests:
       storage: 50Gi
