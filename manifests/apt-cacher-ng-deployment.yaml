@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apt-cacher-ng
+  namespace: cyclops-assets
+spec:
+  replicas: 2
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: apt-cacher-ng
+  template:
+    metadata:
+      labels:
+        app: apt-cacher-ng
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: apt-cacher-ng
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: apt-cacher-ng
+        image: quay.io/cyclops-k8s/apt-cacher-ng:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "200Mi"
+            cpu: "500m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+        ports:
+        - containerPort: 3142
+          name: http
+        volumeMounts:
+        - mountPath: /var/cache/apt-cacher-ng
+          name: apt-cacher-ng-cache
+      volumes:
+      - name: apt-cacher-ng-cache
+        persistentVolumeClaim:
+          claimName: apt-cacher-ng-cache

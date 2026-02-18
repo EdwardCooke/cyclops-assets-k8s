@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apt-cacher-ng-cache
+  namespace: cyclops-assets
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: ceph-filesystem
+  volumeMode: Filesystem
