@@ -29,9 +29,9 @@ spec:
         image: nginx:latest
         livenessProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: 80
-          initialDelaySeconds: 5
+          initialDelaySeconds: 3
           periodSeconds: 3
         ports:
         - containerPort: 80
