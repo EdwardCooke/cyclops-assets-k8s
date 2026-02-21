@@ -28,7 +28,7 @@ spec:
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
-            path: /
+            path: /style.css
             port: 3142
           initialDelaySeconds: 3
           periodSeconds: 3
