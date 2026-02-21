@@ -28,7 +28,7 @@ spec:
         image: registry:3
         livenessProbe:
           httpGet:
-            path: /healthz
+            path: /v2/
             port: 5000
           initialDelaySeconds: 3
           periodSeconds: 3
