@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
+  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
