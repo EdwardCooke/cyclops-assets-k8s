@@ -1,12 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   name: registry-mirrors
   namespace: cyclops-assets
 spec:
-  replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: registry-mirrors
@@ -16,24 +16,17 @@ spec:
         app: registry-mirrors
     spec:
       affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: registry-mirrors
-              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
       containers:
       - name: proxy
         image: nginx:latest
-        resources:
-          limits:
-            memory: "500Mi"
-            cpu: "1500m"
-          requests:
-            memory: "50Mi"
-            cpu: "10m"
         ports:
         - containerPort: 80
           name: http
@@ -44,6 +37,13 @@ spec:
           name: sites
         - mountPath: /etc/nginx/ssl
           name: ssl-certs
+        resources:
+          limits:
+            cpu: 1500m
+            memory: 500Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
       volumes:
       - name: sites
         configMap:

@@ -4,8 +4,9 @@ metadata:
   name: mirror-registry-k8s-io
   namespace: cyclops-assets
 spec:
-  selector:
-    app: mirror-registry-k8s-io
   ports:
   - port: 5000
     targetPort: 5000
+  selector:
+    app: mirror-registry-k8s-io
+  trafficDistribution: preferSameNode

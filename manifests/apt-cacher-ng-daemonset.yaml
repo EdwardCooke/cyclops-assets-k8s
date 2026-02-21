@@ -1,10 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
-  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
@@ -14,17 +13,32 @@ spec:
       labels:
         app: apt-cacher-ng
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
       containers:
       - name: apt-cacher-ng
         image: quay.io/cyclops-k8s/apt-cacher-ng:latest
         imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3142
+          initialDelaySeconds: 3
+          periodSeconds: 3
         resources:
           limits:
-            memory: "200Mi"
-            cpu: "500m"
+            cpu: 500m
+            memory: 200Mi
           requests:
-            memory: "50Mi"
-            cpu: "10m"
+            cpu: 50m
+            memory: 50Mi
         ports:
         - containerPort: 3142
           name: http
@@ -37,7 +51,4 @@ spec:
       - name: apt-cacher-ng-cache
         persistentVolumeClaim:
           claimName: apt-cacher-ng-cache
-  strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 0
