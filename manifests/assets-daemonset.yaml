@@ -41,11 +41,11 @@ spec:
           name: https
         resources:
           limits:
-            cpu: 1500m
-            memory: 200Mi
+            cpu: 500m
+            memory: 500Mi
           requests:
             cpu: 10m
-            memory: 50Mi
+            memory: 100Mi
         volumeMounts:
         - mountPath: /usr/share/nginx/html
           name: assets

@@ -39,18 +39,18 @@ spec:
           name: http
         - containerPort: 443
           name: https
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
         volumeMounts:
         - mountPath: /etc/nginx/conf.d
           name: sites
         - mountPath: /etc/nginx/ssl
           name: ssl-certs
-        resources:
-          limits:
-            cpu: 1500m
-            memory: 500Mi
-          requests:
-            cpu: 10m
-            memory: 50Mi
       volumes:
       - name: sites
         configMap:
