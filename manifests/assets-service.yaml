@@ -13,4 +13,4 @@ spec:
     targetPort: 443
   selector:
     app: cyclops-assets
-  trafficDistribution: preferSameNode
+  trafficDistribution: PreferSameNode
