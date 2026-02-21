@@ -24,6 +24,7 @@ spec:
                 operator: In
                 values:
                 - amd64
+      automountServiceAccountToken: false
       containers:
       - name: cyclops-assets
         image: nginx:latest

@@ -22,9 +22,18 @@ spec:
                 operator: In
                 values:
                 - amd64
+      automountServiceAccountToken: false
       containers:
       - name: mirror
         image: registry:3
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+        - containerPort: 5000
         resources:
           limits:
             cpu: 1000m
@@ -32,8 +41,6 @@ spec:
           requests:
             cpu: 10m
             memory: 50Mi
-        ports:
-        - containerPort: 5000
         volumeMounts:
         - mountPath: /var/lib/registry
           name: registry-storage

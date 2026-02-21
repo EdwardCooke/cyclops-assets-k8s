@@ -23,6 +23,7 @@ spec:
                 operator: In
                 values:
                 - amd64
+      automountServiceAccountToken: false
       containers:
       - name: apt-cacher-ng
         image: quay.io/cyclops-k8s/apt-cacher-ng:latest

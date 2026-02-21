@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: mirror-docker-io
+  name: mirror-quay-io
   namespace: cyclops-assets
 spec:
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: mirror-docker-io
+      app: mirror-quay-io
   template:
     metadata:
       labels:
-        app: mirror-docker-io
+        app: mirror-quay-io
     spec:
       affinity:
         nodeAffinity:
@@ -49,7 +49,7 @@ spec:
       volumes:
       - name: registry-storage
         persistentVolumeClaim:
-          claimName: mirror-docker-io
+          claimName: mirror-quay-io
       - name: registry-config
         configMap:
-          name: mirror-docker-io
+          name: mirror-quay-io
