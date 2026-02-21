@@ -26,6 +26,7 @@ spec:
                 curl -O "$url"
               done
               mv /assets/os-images/new/* /assets/os-images/
+              curl https://download.docker.com/linux/centos/gpg -o /assets/os-images/docker-centos.gpg
             envFrom:
             - configMapRef:
                 name: os-images
