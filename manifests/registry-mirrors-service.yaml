@@ -13,4 +13,4 @@ spec:
   - name: https
     port: 443
     targetPort: 443
-  trafficDistribution: preferSameNode
+  trafficDistribution: PreferSameNode
