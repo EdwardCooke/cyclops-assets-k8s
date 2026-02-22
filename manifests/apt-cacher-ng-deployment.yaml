@@ -47,7 +47,7 @@ spec:
         volumeMounts:
         - mountPath: /var/cache/apt-cacher-ng
           name: apt-cacher-ng-cache
-        - mountPath: /etc/apt-cacher-ng
+        - mountPath: /etc/apt-cacher-ng/cyclops.conf
           name: apt-cacher-ng-cm
           subPath: cyclops.conf
       securityContext:
