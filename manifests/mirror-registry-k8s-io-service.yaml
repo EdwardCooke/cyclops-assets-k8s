@@ -5,7 +5,8 @@ metadata:
   namespace: cyclops-assets
 spec:
   ports:
-  - port: 5000
+  - name: registry
+    port: 5000
     targetPort: 5000
   selector:
     app: mirror-registry-k8s-io

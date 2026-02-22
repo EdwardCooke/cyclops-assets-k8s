@@ -7,5 +7,7 @@ spec:
   selector:
     app: mirror-quay-io
   ports:
-  - port: 5000
+  - name: registry
+    port: 5000
     targetPort: 5000
+  trafficDistribution: PreferSameNode
