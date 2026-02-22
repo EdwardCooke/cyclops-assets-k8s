@@ -9,4 +9,5 @@ data:
     https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2
     https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
     https://cloud-images.ubuntu.com/questing/current/questing-server-cloudimg-amd64.img
-    https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/calico.yaml
+    https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/calico.yaml
+    https://download.docker.com/linux/debian/gpg

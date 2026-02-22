@@ -1,12 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   name: cyclops-assets
   namespace: cyclops-assets
 spec:
-  replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cyclops-assets
@@ -16,29 +16,36 @@ spec:
         app: cyclops-assets
     spec:
       affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app: cyclops-assets
-              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
+      automountServiceAccountToken: false
       containers:
       - name: cyclops-assets
         image: nginx:latest
-        resources:
-          limits:
-            memory: "200Mi"
-            cpu: "1500m"
-          requests:
-            memory: "50Mi"
-            cpu: "10m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 3
         ports:
         - containerPort: 80
           name: http
         - containerPort: 443
           name: https
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
         volumeMounts:
         - mountPath: /usr/share/nginx/html
           name: assets
@@ -62,10 +69,10 @@ spec:
           secretName: assets-cyclops-tls
       - name: ssl-certs-ca
         secret:
-          secretName: assets-cyclops-tls
           items:
           - key: ca.crt
             path: ca.crt
+          secretName: assets-cyclops-tls
       - name: well-known
         configMap:
           defaultMode: 420

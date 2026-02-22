@@ -4,9 +4,10 @@ metadata:
   name: package-cache
   namespace: cyclops-assets
 spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3142
   selector:
     app: apt-cacher-ng
-  ports:
-  - port: 80
-    targetPort: 3142
-    name: http
+  trafficDistribution: PreferSameNode

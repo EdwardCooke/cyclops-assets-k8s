@@ -6,13 +6,19 @@ metadata:
 data:
   default.conf: |
     server {
-        listen              80;
-        listen              443 ssl;
-        server_name         assets.cyclops-assets;
-        ssl_certificate     /etc/nginx/ssl/tls.crt;
-        ssl_certificate_key /etc/nginx/ssl/tls.key;
+      listen              80;
+      listen              443 ssl;
+      server_name         assets.cyclops-assets;
+      ssl_certificate     /etc/nginx/ssl/tls.crt;
+      ssl_certificate_key /etc/nginx/ssl/tls.key;
 
-        location / {
-            root   /usr/share/nginx/html;
-        }
+      location = /healthz {
+          access_log off;
+          add_header Content-Type text/plain;
+          return 200 "healthy\n";
+      }
+
+      location / {
+          root   /usr/share/nginx/html;
+      }
     }

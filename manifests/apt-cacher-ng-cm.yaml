@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apt-cacher-ng
+  namespace: cyclops-assets
+data:
+  cyclops.conf: |
+    PassThroughPattern: .*
+    # PassThroughPattern: ^download\.docker\.com:443$
+    # PassThroughPattern: ^ppa\.launchpadcontent\.net:443$
+    # PassThroughPattern: ^mirrors\.centos\.org:443$

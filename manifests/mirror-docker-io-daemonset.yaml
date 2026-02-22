@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mirror-docker-io
+  namespace: cyclops-assets
+spec:
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: mirror-docker-io
+  template:
+    metadata:
+      labels:
+        app: mirror-docker-io
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
+      automountServiceAccountToken: false
+      containers:
+      - name: mirror
+        env:
+        - name: OTEL_TRACES_EXPORTER
+          value: none
+        image: registry:3
+        livenessProbe:
+          httpGet:
+            path: /v2/
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /var/lib/registry
+          name: registry-storage
+        - mountPath: /etc/distribution
+          name: registry-config
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: mirror-docker-io
+      - name: registry-config
+        configMap:
+          name: mirror-docker-io

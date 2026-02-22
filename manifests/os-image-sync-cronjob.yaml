@@ -5,18 +5,13 @@ metadata:
   namespace: cyclops-assets
 spec:
   concurrencyPolicy: Forbid
-  schedule: "0 0 * * *"
   jobTemplate:
     spec:
       template:
         spec:
-          restartPolicy: Never
+          automountServiceAccountToken: false
           containers:
           - name: image-sync
-            image: ubuntu:latest
-            envFrom:
-            - configMapRef:
-                name: os-images
             command:
             - /bin/sh
             - -c
@@ -31,10 +26,17 @@ spec:
                 curl -O "$url"
               done
               mv /assets/os-images/new/* /assets/os-images/
+              curl https://download.docker.com/linux/centos/gpg -o /assets/os-images/docker-centos.gpg
+            envFrom:
+            - configMapRef:
+                name: os-images
+            image: ubuntu:latest
             volumeMounts:
             - mountPath: /assets
               name: assets
+          restartPolicy: Never
           volumes:
           - name: assets
             persistentVolumeClaim:
               claimName: assets
+  schedule: "0 0 * * *"

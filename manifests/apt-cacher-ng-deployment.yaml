@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
@@ -14,30 +16,51 @@ spec:
       labels:
         app: apt-cacher-ng
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
+      automountServiceAccountToken: false
       containers:
       - name: apt-cacher-ng
         image: quay.io/cyclops-k8s/apt-cacher-ng:latest
         imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /style.css
+            port: 3142
+          initialDelaySeconds: 3
+          periodSeconds: 3
         resources:
           limits:
-            memory: "200Mi"
-            cpu: "500m"
+            cpu: 500m
+            memory: 500Mi
           requests:
-            memory: "50Mi"
-            cpu: "10m"
+            cpu: 100m
+            memory: 100Mi
         ports:
         - containerPort: 3142
           name: http
         volumeMounts:
         - mountPath: /var/cache/apt-cacher-ng
           name: apt-cacher-ng-cache
+        - mountPath: /etc/apt-cacher-ng/cyclops.conf
+          name: apt-cacher-ng-cm
+          subPath: cyclops.conf
       securityContext:
         fsGroup: 101
       volumes:
       - name: apt-cacher-ng-cache
         persistentVolumeClaim:
           claimName: apt-cacher-ng-cache
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 0
+      - name: apt-cacher-ng-cm
+        configMap:
+          name: apt-cacher-ng
+          items:
+          - key: cyclops.conf
+            path: cyclops.conf
