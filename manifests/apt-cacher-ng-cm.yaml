@@ -7,3 +7,4 @@ data:
   cyclops.conf: |
     PassThroughPattern: ^download\.docker\.com:443$
     PassThroughPattern: ^ppa\.launchpadcontent\.net:443$
+    PassThroughPattern: ^mirrors\.centos\.org:443$
