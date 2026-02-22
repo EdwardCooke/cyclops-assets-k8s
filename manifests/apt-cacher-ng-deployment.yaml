@@ -49,6 +49,7 @@ spec:
           name: apt-cacher-ng-cache
         - mountPath: /etc/apt-cacher-ng
           name: apt-cacher-ng-cm
+          subPatch: cyclops.conf
       securityContext:
         fsGroup: 101
       volumes:
