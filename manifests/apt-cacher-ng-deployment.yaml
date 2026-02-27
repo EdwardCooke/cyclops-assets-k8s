@@ -6,10 +6,15 @@ metadata:
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
+  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: apt-cacher-ng
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
   template:
     metadata:
       labels:
@@ -55,14 +60,8 @@ spec:
         fsGroup: 101
       volumes:
       - name: apt-cacher-ng-cache
-        ephemeral:
-          volumeClaimTemplate:
-            spec:
-              accessModes: [ "ReadWriteOnce" ]
-              storageClassName: ceph-filesystem
-              resources:
-                requests:
-                  storage: 10Gi
+        persistentVolumeClaim:
+          claimName: apt-cacher-ng-cache
       - name: apt-cacher-ng-cm
         configMap:
           items:
