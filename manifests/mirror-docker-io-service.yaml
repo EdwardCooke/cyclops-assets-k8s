@@ -4,9 +4,10 @@ metadata:
   name: mirror-docker-io
   namespace: cyclops-assets
 spec:
+  ports:
+  - name: registry
+    port: 5000
+    targetPort: 5000
   selector:
     app: mirror-docker-io
-  ports:
-  - port: 5000
-    targetPort: 5000
   trafficDistribution: PreferSameNode
