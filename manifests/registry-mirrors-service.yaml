@@ -4,8 +4,6 @@ metadata:
   name: registry-mirrors
   namespace: cyclops-assets
 spec:
-  selector:
-    app: registry-mirrors
   ports:
   - name: http
     port: 80
@@ -13,4 +11,6 @@ spec:
   - name: https
     port: 443
     targetPort: 443
+  selector:
+    app: registry-mirrors
   trafficDistribution: PreferSameNode

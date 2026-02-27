@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   name: apt-cacher-ng
   namespace: cyclops-assets
 spec:
-  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
@@ -56,11 +55,17 @@ spec:
         fsGroup: 101
       volumes:
       - name: apt-cacher-ng-cache
-        persistentVolumeClaim:
-          claimName: apt-cacher-ng-cache
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: ceph-filesystem
+              resources:
+                requests:
+                  storage: 10Gi
       - name: apt-cacher-ng-cm
         configMap:
-          name: apt-cacher-ng
           items:
           - key: cyclops.conf
             path: cyclops.conf
+          name: apt-cacher-ng

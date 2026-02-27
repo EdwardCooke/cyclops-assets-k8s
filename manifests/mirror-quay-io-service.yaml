@@ -4,10 +4,10 @@ metadata:
   name: mirror-quay-io
   namespace: cyclops-assets
 spec:
-  selector:
-    app: mirror-quay-io
   ports:
   - name: registry
     port: 5000
     targetPort: 5000
+  selector:
+    app: mirror-quay-io
   trafficDistribution: PreferSameNode
