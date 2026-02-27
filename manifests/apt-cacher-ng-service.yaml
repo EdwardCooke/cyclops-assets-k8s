@@ -10,3 +10,4 @@ spec:
     targetPort: 3142
   selector:
     app: apt-cacher-ng
+  trafficDistribution: PreferSameNode
