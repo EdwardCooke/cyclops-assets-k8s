@@ -7,4 +7,4 @@ data:
   cyclops.conf: |
     PassThroughPattern: .*
     VfilePatternEx: gpg|.*Release.key.*
-    Debug 7
+    Debug: 7
