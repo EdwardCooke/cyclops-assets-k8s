@@ -92,7 +92,7 @@ spec:
         - mountPath: /squid-certs
           name: squid-certs
       securityContext:
-        fsGroup: 14
+        fsGroup: 13
       volumes:
       - name: squid-state
         persistentVolumeClaim:
