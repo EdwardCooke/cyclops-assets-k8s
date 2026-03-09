@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: squid
+  namespace: cyclops-assets
+data:
+  squid.conf: |
+    # source networks
+    acl allowed_networks src 10.0.0.0/8
+    acl allowed_networks src 172.16.0.0/12
+    acl allowed_networks src 192.168.0.0/16
+    acl allowed_networks src fd00::/8
+
+    # default to a different port than stock squid
+    http_port 8080 ssl-bump generate-host-certificates=on tls-cert=/squid-certs/tls.crt tls-key=/squid-certs/tls.key tls-default-ca=on
+
+    # user visible name
+    visible_hostname squid-deb-proxy
+
+    # we need a big cache, some packages are huge
+    maximum_object_size 1024 MB
+
+    # use a different dir than stock squid and default to 45G
+    cache_dir aufs /squid-cache 40000 16 256
+
+    cache_access_log /var/log/squid/access.log
+    cache_log /var/log/squid/cache.log
+    cache_store_log /var/log/squid/store.log
+
+    # tweaks to speed things up
+    cache_mem 512 MB
+    maximum_object_size_in_memory 10240 KB
+
+    # pid
+    pid_filename /run/squid.pid
+
+    # This section is from: https://github.com/drosskopp/squid-cache/blob/main/squid.conf
+    # cache repodata only few minutes and then query parent whether it is fresh
+    refresh_pattern /XMLRPC/GET-REQ/.*/repodata/.*$ 0 1% 1440 ignore-no-cache reload-into-ims refresh-ims
+    refresh_pattern  \.rpm$  129600 100% 129600 override-expire override-lastmod ignore-reload reload-into-ims
+    # refresh_pattern . 0 100% 525960
+
+    # refresh pattern for debs and udebs
+    refresh_pattern deb$   129600 100% 129600
+    refresh_pattern udeb$   129600 100% 129600
+    refresh_pattern tar.gz$  129600 100% 129600
+    refresh_pattern tar.xz$  129600 100% 129600
+    refresh_pattern tar.bz2$  129600 100% 129600
+
+    # always refresh Packages and Release files
+    refresh_pattern \/(Packages|Sources)(|\.bz2|\.gz|\.xz)$ 1440 0% 1440 refresh-ims
+    refresh_pattern \/Release(|\.gpg)$ 1440 0% 1440 refresh-ims
+    refresh_pattern \/InRelease$ 1440 0% 1440 refresh-ims
+    refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 1440 0% 1440 refresh-ims
+
+    refresh_pattern \/gpg$ 1440 0% 1440 refresh-ims
+    refresh_pattern \/Release\.key$ 1440 0% 1440 refresh-ims
+    # handle meta-release and changelogs.ubuntu.com special
+    # (fine to have this on debian too)
+    refresh_pattern changelogs.ubuntu.com\/.* 1440 1% 1440
+
+    # only allow connects to ports for http, https
+    acl Safe_ports port 80
+    acl Safe_ports port 443
+    acl SSL_ports port 443
+    acl CONNECT method CONNECT
+    http_access deny !Safe_ports
+    http_access deny CONNECT !SSL_ports
+
+    http_access allow all
+    cache allow all
+
+    # netdb_filename stdio:/squid-state/netdb.state
+    acl step1 at_step SslBump1
+    ssl_bump peek step1
+    ssl_bump bump all
+    tls_outgoing_options cafile=/etc/ssl/certs/ca-certificates.crt
+
+    cachemgr_passwd disable all
+    sslcrtd_program /usr/lib/squid/security_file_certgen -s /squid-state/ssl_db -M 4MB
