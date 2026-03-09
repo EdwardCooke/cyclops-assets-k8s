@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: squid
+  namespace: cyclops-assets
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: squid
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: squid
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cyclops-k8s.io/ansible-kubernetes
+                operator: In
+                values:
+                - amd64
+      automountServiceAccountToken: false
+      containers:
+      - name: squid
+        image: quay.io/cyclops-k8s/squid:latest
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 600Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - http://localhost:8080/
+            - -o
+            - /dev/null
+            - -s
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - http://localhost:8080/
+            - -o
+            - /dev/null
+            - -s
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        startupProbe:
+          exec:
+            command:
+            - curl
+            - http://localhost:8080/
+            - -o
+            - /dev/null
+            - -s
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /squid-state
+          name: squid-state
+        - mountPath: /squid-cache
+          name: squid-cache
+        - mountPath: /etc/squid/squid.conf
+          name: squid
+          subPath: squid.conf
+        - mountPath: /squid-certs
+          name: squid-certs
+      securityContext:
+        fsGroup: 14
+      volumes:
+      - name: squid-state
+        persistentVolumeClaim:
+          claimName: squid-state
+      - name: squid-cache
+        persistentVolumeClaim:
+          claimName: squid-cache
+      - configMap:
+          defaultMode: 420
+          name: squid
+        name: squid
+      - name: squid-certs
+        secret:
+          defaultMode: 420
+          secretName: squid-tls
